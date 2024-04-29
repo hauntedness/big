@@ -1,9 +1,21 @@
 package decimal
 
-import "github.com/cockroachdb/apd/v3"
+import (
+	"math/big"
+
+	"github.com/cockroachdb/apd/v3"
+)
 
 func New(coeff int64, exponent int32) *apd.Decimal {
 	return apd.New(coeff, exponent)
+}
+
+func NewFromInt(coeff *big.Int, exponent int32) *apd.Decimal {
+	return apd.NewWithBigInt(new(apd.BigInt).SetMathBigInt(coeff), exponent)
+}
+
+func NewFromBigInt(coeff *apd.BigInt, exponent int32) *apd.Decimal {
+	return apd.NewWithBigInt(new(apd.BigInt).Set(coeff), exponent)
 }
 
 // NewFromString call apd.NewFromString but ignore returned Condition
