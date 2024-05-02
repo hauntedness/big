@@ -63,7 +63,7 @@ func Mul(x *Decimal, y *Decimal) (*Decimal, error) {
 // if dst is nil, new(Decimal) will be used
 func MulTo(dst *Decimal, x *Decimal, y *Decimal) (*Decimal, error) {
 	if dst == nil {
-		dst = new(Decimal)
+		dst = new(Decimal).SetInt64(1)
 	}
 	_, err := apd.BaseContext.Mul(dst, x, y)
 	if err != nil {
