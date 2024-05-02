@@ -482,6 +482,14 @@ func TestProductTo(t *testing.T) {
 			want:    new(Decimal).SetInt64(24),
 			wantErr: false,
 		},
+		{
+			args: args{
+				dst:    new(Decimal).SetInt64(12),
+				values: []*apd.Decimal{New(1, 0)},
+			},
+			want:    new(Decimal).SetInt64(1),
+			wantErr: false,
+		},
 	}
 	for i, tt := range tests {
 		if tt.name == "" {

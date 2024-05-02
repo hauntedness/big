@@ -166,7 +166,7 @@ func IntegralTo(dst *apd.BigInt, x *Decimal) *apd.BigInt {
 	return dst
 }
 
-// Sum is for convenience to call AddTo
+// Sum is for convenience to call SumTo
 func Sum(values ...*Decimal) (*Decimal, error) {
 	return SumTo(nil, values...)
 }
@@ -189,12 +189,12 @@ func SumTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
 	return dst, nil
 }
 
-// Sum is for convenience to call AddTo
+// Sum is for convenience to call ProductTo
 func Product(values ...*Decimal) (*Decimal, error) {
 	return ProductTo(nil, values...)
 }
 
-// Product multiply all values to dst
+// ProductTo multiply all values to dst
 func ProductTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
 	if dst == nil {
 		dst = new(Decimal)
