@@ -176,6 +176,10 @@ func SumTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
 	if dst == nil {
 		dst = new(Decimal)
 	}
+	dst.SetInt64(0)
+	if len(values) == 0 {
+		return dst, nil
+	}
 	for _, value := range values {
 		_, err := AddTo(dst, value, dst)
 		if err != nil {
@@ -193,10 +197,12 @@ func Product(values ...*Decimal) (*Decimal, error) {
 // Product multiply all values to dst
 func ProductTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
 	if dst == nil {
-		dst = new(Decimal).SetInt64(1)
-	} else if dst.IsZero() {
-		dst.SetInt64(1)
+		dst = new(Decimal)
 	}
+	if len(values) == 0 {
+		return dst.SetInt64(0), nil
+	}
+	dst.SetInt64(1)
 	for _, value := range values {
 		_, err := MulTo(dst, value, dst)
 		if err != nil {
