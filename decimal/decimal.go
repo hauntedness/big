@@ -63,7 +63,7 @@ func Mul(x *Decimal, y *Decimal) (*Decimal, error) {
 // if dst is nil, new(Decimal) will be used
 func MulTo(dst *Decimal, x *Decimal, y *Decimal) (*Decimal, error) {
 	if dst == nil {
-		dst = new(Decimal).SetInt64(1)
+		dst = new(Decimal)
 	}
 	_, err := apd.BaseContext.Mul(dst, x, y)
 	if err != nil {
@@ -193,7 +193,9 @@ func Product(values ...*Decimal) (*Decimal, error) {
 // Product multiply all values to dst
 func ProductTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
 	if dst == nil {
-		dst = new(Decimal)
+		dst = new(Decimal).SetInt64(1)
+	} else if dst.IsZero() {
+		dst.SetInt64(1)
 	}
 	for _, value := range values {
 		_, err := MulTo(dst, value, dst)
