@@ -385,3 +385,117 @@ func TestSafePresision(t *testing.T) {
 		})
 	}
 }
+
+func TestSumTo(t *testing.T) {
+	type args struct {
+		dst    *Decimal
+		values []*Decimal
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Decimal
+		wantErr bool
+	}{
+		{
+			args: args{
+				dst:    &apd.Decimal{},
+				values: []*apd.Decimal{New(0, 0), New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(apd.Decimal).SetInt64(10),
+			wantErr: false,
+		},
+		{
+			args: args{
+				dst:    nil,
+				values: []*apd.Decimal{New(0, 0), New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(apd.Decimal).SetInt64(10),
+			wantErr: false,
+		},
+		{
+			args: args{
+				dst:    new(Decimal).SetInt64(12),
+				values: []*apd.Decimal{New(0, 0), New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(apd.Decimal).SetInt64(10),
+			wantErr: false,
+		},
+	}
+	for i, tt := range tests {
+		if tt.name == "" {
+			tt.name = fmt.Sprintf("testcase_%d", i)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := SumTo(tt.args.dst, tt.args.values...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SumTo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got.Cmp(tt.want) != 0 {
+				t.Errorf("SumTo() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProductTo(t *testing.T) {
+	type args struct {
+		dst    *Decimal
+		values []*Decimal
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Decimal
+		wantErr bool
+	}{
+		{
+			args: args{
+				dst:    &apd.Decimal{},
+				values: []*apd.Decimal{New(0, 0), New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(Decimal),
+			wantErr: false,
+		},
+		{
+			args: args{
+				dst:    nil,
+				values: []*apd.Decimal{New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(Decimal).SetInt64(24),
+			wantErr: false,
+		},
+		{
+			args: args{
+				dst:    &apd.Decimal{},
+				values: []*apd.Decimal{New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(Decimal).SetInt64(24),
+			wantErr: false,
+		},
+		{
+			args: args{
+				dst:    new(Decimal).SetInt64(12),
+				values: []*apd.Decimal{New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
+			},
+			want:    new(Decimal).SetInt64(24),
+			wantErr: false,
+		},
+	}
+	for i, tt := range tests {
+		if tt.name == "" {
+			tt.name = fmt.Sprintf("testcase_%d", i)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ProductTo(tt.args.dst, tt.args.values...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ProductTo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got.Cmp(tt.want) != 0 {
+				t.Errorf("ProductTo() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
