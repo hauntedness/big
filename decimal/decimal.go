@@ -228,3 +228,23 @@ func SafePresision(x *Decimal) int64 {
 	// result
 	return s
 }
+
+// RelativeChange return value of (x - y) / x
+func RelativeChange(x *Decimal, y *Decimal) (*Decimal, error) {
+	sp := SafePresision(x) + SafePresision(y)
+	c := apd.BaseContext.WithPrecision(uint32(sp))
+	tmp := new(Decimal)
+	dif, err := SubTo(tmp, x, y)
+	if err != nil {
+		return nil, err
+	}
+	rc, err := DivTo(dif, c, dif, x)
+	if err != nil {
+		return nil, err
+	}
+	return rc, nil
+}
+
+func Abs(x *Decimal) *Decimal {
+	return new(Decimal).Abs(x)
+}

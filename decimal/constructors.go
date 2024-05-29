@@ -28,3 +28,7 @@ func NewFromString(s string) (*apd.Decimal, error) {
 func NewFromFloat(f float64) (*apd.Decimal, error) {
 	return new(Decimal).SetFloat64(f)
 }
+
+func ToDecimal[T int | int8 | int16 | int32 | int64](i T) *Decimal {
+	return New(int64(i), 0)
+}
