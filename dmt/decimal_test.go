@@ -1,4 +1,4 @@
-package decimal
+package dmt
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func TestAddTo(t *testing.T) {
 			args: args{
 				x: apd.New(1234, -3),
 				y: apd.New(1234, -3),
-				z: nil,
+				z: new(apd.Decimal),
 			},
 			want: apd.New(2468, -3),
 		},
@@ -31,7 +31,7 @@ func TestAddTo(t *testing.T) {
 			args: args{
 				x: apd.New(1234, -3),
 				y: apd.New(1234, -3),
-				z: nil,
+				z: new(apd.Decimal),
 			},
 			want: apd.New(2468, -3),
 		},
@@ -79,14 +79,14 @@ func TestIntegralTo(t *testing.T) {
 		{
 			args: args{
 				x: apd.New(1234567, -2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(12345),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, 2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(123456700),
 		},
@@ -100,14 +100,14 @@ func TestIntegralTo(t *testing.T) {
 		{
 			args: args{
 				x: apd.New(-1234567, -2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(-12345),
 		},
 		{
 			args: args{
 				x: apd.New(-1234567, 2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(-123456700),
 		},
@@ -128,9 +128,9 @@ func TestIntegralTo(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("testcase_%d", i), func(t *testing.T) {
 			got := IntegralTo(tt.args.y, tt.args.x)
-			fmt.Printf("TruncateTo(%v) => %v\n", tt.args.x, got)
+			fmt.Printf("IntegralTo(%v) => %v\n", tt.args.x, got)
 			if got.Cmp(tt.want) != 0 {
-				t.Errorf("TruncateTo() = %v, want %v", got, tt.want)
+				t.Errorf("IntegralTo() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -186,42 +186,42 @@ func BenchmarkIntegral1(b *testing.B) {
 		{
 			args: args{
 				x: apd.New(1234567, -2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(12345),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, 2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(123456700),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, -122),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(0),
 		},
 		{
 			args: args{
 				x: apd.New(-1234567, -2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(-12345),
 		},
 		{
 			args: args{
 				x: apd.New(-1234567, 2),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: apd.NewBigInt(-123456700),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, 122),
-				y: nil,
+				y: new(apd.BigInt),
 			},
 			want: func() *apd.BigInt {
 				integer := apd.NewBigInt(1234567)
@@ -407,7 +407,7 @@ func TestSumTo(t *testing.T) {
 		},
 		{
 			args: args{
-				dst:    nil,
+				dst:    new(apd.Decimal),
 				values: []*apd.Decimal{New(0, 0), New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
 			},
 			want:    new(apd.Decimal).SetInt64(10),
@@ -460,7 +460,7 @@ func TestProductTo(t *testing.T) {
 		},
 		{
 			args: args{
-				dst:    nil,
+				dst:    new(Decimal),
 				values: []*apd.Decimal{New(1, 0), New(2, 0), New(3, 0), New(4, 0)},
 			},
 			want:    new(Decimal).SetInt64(24),

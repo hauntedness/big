@@ -1,4 +1,4 @@
-package decimal
+package dmt
 
 func Equal(x, y *Decimal) bool {
 	return x.Cmp(y) == 0
