@@ -15,11 +15,11 @@ func New(coeff int64, exponent int32) *apd.Decimal {
 }
 
 func FromInt(coeff *big.Int, exponent int32) *apd.Decimal {
-	return apd.NewWithBigInt(new(apd.BigInt).SetMathBigInt(coeff), exponent)
+	return FromBigInt(new(apd.BigInt).SetMathBigInt(coeff), exponent)
 }
 
 func FromBigInt(coeff *apd.BigInt, exponent int32) *apd.Decimal {
-	return apd.NewWithBigInt(new(apd.BigInt).Set(coeff), exponent)
+	return apd.NewWithBigInt(coeff, exponent)
 }
 
 // NewFromString call apd.NewFromString but ignore returned Condition
