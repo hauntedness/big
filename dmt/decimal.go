@@ -23,52 +23,51 @@ type ErrDecimal = apd.ErrDecimal
 
 // Add is for convenience to call AddTo
 func Add(x *Decimal, y *Decimal) (*Decimal, error) {
-	return AddTo(new(Decimal), x, y)
+	dst := new(Decimal)
+	err := AddTo(dst, x, y)
+	return dst, err
 }
 
 // AddTo sets dst to the sum x+y and return dst.
 // if dst is nil, new(Decimal) will be used
-func AddTo(dst *Decimal, x *Decimal, y *Decimal) (*Decimal, error) {
+func AddTo(dst *Decimal, x *Decimal, y *Decimal) error {
 	_, err := apd.BaseContext.Add(dst, x, y)
-	if err != nil {
-		return nil, err
-	}
-	return dst, nil
+	return err
 }
 
 // Sub is for convenience to call SubTo
 func Sub(x *Decimal, y *Decimal) (*Decimal, error) {
-	return SubTo(new(Decimal), x, y)
+	dst := new(Decimal)
+	err := SubTo(dst, x, y)
+	return dst, err
 }
 
 // SubTo sets dst to the difference x-y and return dst.
 // if dst is nil, new(Decimal) will be used
-func SubTo(dst *Decimal, x *Decimal, y *Decimal) (*Decimal, error) {
+func SubTo(dst *Decimal, x *Decimal, y *Decimal) error {
 	_, err := apd.BaseContext.Sub(dst, x, y)
-	if err != nil {
-		return nil, err
-	}
-	return dst, nil
+	return err
 }
 
 // Mul is for convenience to call MulTo
 func Mul(x *Decimal, y *Decimal) (*Decimal, error) {
-	return MulTo(new(Decimal), x, y)
+	dst := new(Decimal)
+	err := MulTo(dst, x, y)
+	return dst, err
 }
 
 // MulTo sets dst to the product x*y and return dst.
 // if dst is nil, new(Decimal) will be used
-func MulTo(dst *Decimal, x *Decimal, y *Decimal) (*Decimal, error) {
+func MulTo(dst *Decimal, x *Decimal, y *Decimal) error {
 	_, err := apd.BaseContext.Mul(dst, x, y)
-	if err != nil {
-		return nil, err
-	}
-	return dst, nil
+	return err
 }
 
 // Div is for convenience to call DivTo
 func Div(c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
-	return DivTo(new(Decimal), c, x, y)
+	dst := new(Decimal)
+	err := DivTo(dst, c, x, y)
+	return dst, err
 }
 
 // DivTo sets dst to the quotient x/y for y != 0 and return dst.
@@ -76,12 +75,9 @@ func Div(c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 // c.Precision must be > 0.
 // If an exact division is required, use a context with high precision
 // and verify it was exact by checking the Inexact flag on the return Condition.
-func DivTo(dst *Decimal, c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
+func DivTo(dst *Decimal, c *Context, x *Decimal, y *Decimal) error {
 	_, err := c.Quo(dst, x, y)
-	if err != nil {
-		return nil, err
-	}
-	return dst, nil
+	return err
 }
 
 // SetScale is limit the precision and scale of dst
@@ -128,7 +124,9 @@ func setScaleTo(dst *Decimal, precision, scale int, rounder apd.Rounder) error {
 
 // Integral return integral part of x
 func Integral(x *Decimal) *big.Int {
-	return IntegralTo(new(apd.BigInt), x).MathBigInt()
+	dst := new(apd.BigInt)
+	IntegralTo(dst, x)
+	return dst.MathBigInt()
 }
 
 // IntegralDst return set d to integral part of x.
@@ -139,7 +137,7 @@ func IntegralDst(dst, x *Decimal) (*Decimal, error) {
 
 // IntegralTo sets y by remove the fraction part of x.
 // if y is nil, new(Decimal) will be used
-func IntegralTo(dst *apd.BigInt, x *Decimal) *apd.BigInt {
+func IntegralTo(dst *apd.BigInt, x *Decimal) {
 	d := new(apd.Decimal)
 	_, _ = IntegralDst(d, x)
 	if d.Negative {
@@ -147,47 +145,51 @@ func IntegralTo(dst *apd.BigInt, x *Decimal) *apd.BigInt {
 	} else {
 		dst.Set(&d.Coeff)
 	}
-	return dst
 }
 
 // Sum is for convenience to call SumTo
 func Sum(values ...*Decimal) (*Decimal, error) {
-	return SumTo(new(Decimal), values...)
+	dst := new(Decimal)
+	err := SumTo(dst, values...)
+	return dst, err
 }
 
 // SumTo add all values to dst
-func SumTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
+func SumTo(dst *Decimal, values ...*Decimal) error {
 	dst.SetInt64(0)
 	if len(values) == 0 {
-		return dst, nil
+		return nil
 	}
 	for _, value := range values {
-		_, err := AddTo(dst, value, dst)
+		err := AddTo(dst, value, dst)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return dst, nil
+	return nil
 }
 
 // Product is for convenience to call ProductTo
 func Product(values ...*Decimal) (*Decimal, error) {
-	return ProductTo(new(Decimal), values...)
+	dst := new(Decimal)
+	err := ProductTo(dst, values...)
+	return dst, err
 }
 
 // ProductTo multiply all values to dst
-func ProductTo(dst *Decimal, values ...*Decimal) (*Decimal, error) {
+func ProductTo(dst *Decimal, values ...*Decimal) error {
 	if len(values) == 0 {
-		return dst.SetInt64(0), nil
+		dst.SetInt64(0)
+		return nil
 	}
 	dst.SetInt64(1)
 	for _, value := range values {
-		_, err := MulTo(dst, value, dst)
+		err := MulTo(dst, value, dst)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return dst, nil
+	return nil
 }
 
 // SafePresision get a safe presision which have enough space for x
@@ -211,16 +213,16 @@ func SafePresision(x *Decimal) int64 {
 func RelativeChange(x *Decimal, y *Decimal) (*Decimal, error) {
 	sp := SafePresision(x) + SafePresision(y)
 	c := apd.BaseContext.WithPrecision(uint32(sp))
-	tmp := new(Decimal)
-	dif, err := SubTo(tmp, x, y)
+	dif := new(Decimal)
+	err := SubTo(dif, x, y)
 	if err != nil {
 		return nil, err
 	}
-	rc, err := DivTo(dif, c, dif, x)
+	err = DivTo(dif, c, dif, x)
 	if err != nil {
 		return nil, err
 	}
-	return rc, nil
+	return dif, nil
 }
 
 func Abs(x *Decimal) *Decimal {

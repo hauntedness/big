@@ -38,10 +38,12 @@ func TestAddTo(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("testcase_%d", i), func(t *testing.T) {
-			actual, err := AddTo(tt.args.z, tt.args.x, tt.args.y)
+
+			err := AddTo(tt.args.z, tt.args.x, tt.args.y)
 			if err != nil {
 				t.Fatal(err)
 			}
+			actual := tt.args.z
 			slog.Info(actual.Text('f'))
 			if actual.Cmp(tt.want) != 0 {
 				t.Errorf("AddTo() = %v, want %v", actual, tt.want)
@@ -54,10 +56,11 @@ func TestMulTo(t *testing.T) {
 	x, _, _ := apd.NewFromString("3.14159265358979323846264338327950288419716939937510582097494459")
 	y := apd.New(2134, -3)
 	z := new(apd.Decimal)
-	actual, err := MulTo(z, x, y)
+	err := MulTo(z, x, y)
 	if err != nil {
 		t.Fatal(err)
 	}
+	actual := z
 	f64, _ := actual.Float64()
 	const expect = math.Pi * 2.134
 	diff := math.Abs(f64 - expect)
@@ -127,7 +130,8 @@ func TestIntegralTo(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("testcase_%d", i), func(t *testing.T) {
-			got := IntegralTo(tt.args.y, tt.args.x)
+			IntegralTo(tt.args.y, tt.args.x)
+			got := tt.args.y
 			fmt.Printf("IntegralTo(%v) => %v\n", tt.args.x, got)
 			if got.Cmp(tt.want) != 0 {
 				t.Errorf("IntegralTo() = %v, want %v", got, tt.want)
@@ -235,7 +239,7 @@ func BenchmarkIntegral1(b *testing.B) {
 	b.ResetTimer()
 	for range 100000 {
 		for _, v := range benches {
-			_ = IntegralTo(v.args.y, v.args.x)
+			IntegralTo(v.args.y, v.args.x)
 		}
 	}
 }
@@ -302,7 +306,7 @@ func BenchmarkIntegral2(b *testing.B) {
 	b.ResetTimer()
 	for range 100000 {
 		for _, v := range benches {
-			_ = IntegralTo(v.args.y, v.args.x)
+			IntegralTo(v.args.y, v.args.x)
 		}
 	}
 }
@@ -427,7 +431,8 @@ func TestSumTo(t *testing.T) {
 			tt.name = fmt.Sprintf("testcase_%d", i)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := SumTo(tt.args.dst, tt.args.values...)
+			err := SumTo(tt.args.dst, tt.args.values...)
+			got := tt.args.dst
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SumTo() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -496,7 +501,8 @@ func TestProductTo(t *testing.T) {
 			tt.name = fmt.Sprintf("testcase_%d", i)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ProductTo(tt.args.dst, tt.args.values...)
+			err := ProductTo(tt.args.dst, tt.args.values...)
+			got := tt.args.dst
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductTo() error = %v, wantErr %v", err, tt.wantErr)
 				return

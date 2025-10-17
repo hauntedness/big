@@ -19,3 +19,7 @@ func Greater(x, y *Decimal) bool {
 func GreaterEq(x, y *Decimal) bool {
 	return x.Cmp(y) >= 0
 }
+
+func Compare(x, y *Decimal) int {
+	return x.Cmp(y)
+}
