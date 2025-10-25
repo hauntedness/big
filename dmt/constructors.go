@@ -1,25 +1,15 @@
 package dmt
 
 import (
-	"math/big"
-
 	"github.com/cockroachdb/apd/v3"
 )
 
-func WithContext(c *Context) ErrDecimal {
+func With(c *Context) ErrDecimal {
 	return apd.MakeErrDecimal(c)
 }
 
-func New(coeff int64, exponent int32) *apd.Decimal {
-	return apd.New(coeff, exponent)
-}
-
-func FromInt(coeff *big.Int, exponent int32) *apd.Decimal {
-	return FromBigInt(new(apd.BigInt).SetMathBigInt(coeff), exponent)
-}
-
-func FromBigInt(coeff *apd.BigInt, exponent int32) *apd.Decimal {
-	return apd.NewWithBigInt(coeff, exponent)
+func New(coefficient int64, exponent int32) *apd.Decimal {
+	return apd.New(coefficient, exponent)
 }
 
 // NewFromString call apd.NewFromString but ignore returned Condition
@@ -33,10 +23,22 @@ func FromFloat(f float64) (*apd.Decimal, error) {
 	return new(Decimal).SetFloat64(f)
 }
 
-func FromIntN[T int | int8 | int16 | int32 | int64](n T) *Decimal {
+func FromInt[T int | int8 | int16 | int32 | int64](n T) *Decimal {
 	return New(int64(n), 0)
 }
 
-func FromUintN[T uint | uint8 | uint16 | uint32 | uint64](n T) *Decimal {
-	return FromInt(new(big.Int).SetUint64(uint64(n)), 0)
+func FromBigInt(coefficient *apd.BigInt, exponent int32) *apd.Decimal {
+	return apd.NewWithBigInt(coefficient, exponent)
+}
+
+func FromUint[T uint | uint8 | uint16 | uint32 | uint64](n T) *Decimal {
+	return FromBigInt(new(apd.BigInt).SetUint64(uint64(n)), 0)
+}
+
+func Zero() *Decimal {
+	return New(0, 0)
+}
+
+func One() *Decimal {
+	return New(1, 0)
 }
