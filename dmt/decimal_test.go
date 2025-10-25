@@ -142,9 +142,9 @@ func TestIntegralTo(t *testing.T) {
 
 func TestSetScale(t *testing.T) {
 	type args struct {
-		d         *Decimal
-		precision int
-		scale     int
+		d     *Decimal
+		ctx   *Context
+		scale int
 	}
 	tests := []struct {
 		name    string
@@ -154,9 +154,9 @@ func TestSetScale(t *testing.T) {
 		{
 			name: "",
 			args: args{
-				d:         New(12345678, -3),
-				precision: 40,
-				scale:     6,
+				d:     New(12345678, -3),
+				ctx:   WithRounding(40, apd.RoundHalfUp),
+				scale: 6,
 			},
 			wantErr: false,
 		},
@@ -166,7 +166,7 @@ func TestSetScale(t *testing.T) {
 			tt.name = "testcase"
 		}
 		t.Run(fmt.Sprintf("%s_%d", tt.name, i), func(t *testing.T) {
-			if err := SetScale(tt.args.d, tt.args.precision, tt.args.scale, apd.RoundHalfUp); (err != nil) != tt.wantErr {
+			if err := SetScale(tt.args.ctx, tt.args.d, tt.args.scale); (err != nil) != tt.wantErr {
 				t.Errorf("SetScale() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			integ, frac := new(Decimal), new(Decimal)

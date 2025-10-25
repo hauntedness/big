@@ -68,58 +68,35 @@ func DivTo(dst *Decimal, c *Context, x *Decimal, y *Decimal) error {
 }
 
 // SetScale is limit the precision and scale of dst
-func SetScale(dst *Decimal, precision, scale int, rounder apd.Rounder) error {
-	return setScaleTo(dst, precision, scale, rounder)
+func SetScale(ctx *Context, dst *Decimal, scale int) error {
+	return setScaleTo(ctx, dst, scale)
 }
 
 // SetScaleTo is similar to SetScale but avoid mutating the value of x
-func SetScaleTo(dst *Decimal, x *Decimal, precision, scale int, rounder apd.Rounder) error {
+func SetScaleTo(ctx *Context, dst *Decimal, x *Decimal, precision, scale int, rounder apd.Rounder) error {
 	dst.Set(x)
-	return setScaleTo(dst, precision, scale, rounder)
+	return setScaleTo(ctx, dst, scale)
 }
 
-func setScaleTo(dst *Decimal, precision, scale int, rounder apd.Rounder) error {
-	if dst.Form != apd.Finite || precision <= 0 {
+func setScaleTo(ctx *Context, dst *Decimal, scale int) error {
+	if dst.Form != apd.Finite {
 		return nil
 	}
 	// Use +1 here because it is inverted later.
 	if scale < math.MinInt32+1 || scale > math.MaxInt32 {
 		return errors.New("scale out of range")
 	}
-	if scale > precision {
-		return fmt.Errorf("scale (%d) must be between 0 and precision (%d)", scale, precision)
+	if scale > int(ctx.Precision) {
+		return fmt.Errorf("scale (%d) must be between 0 and precision (%d)", scale, ctx.Precision)
 	}
-	c := &apd.Context{
-		Precision:   uint32(precision),
-		MaxExponent: apd.MaxExponent,
-		MinExponent: apd.MinExponent,
-		Traps:       apd.InvalidOperation,
-		Rounding:    rounder,
-	}
-	if _, err := c.Quantize(dst, dst, -int32(scale)); err != nil {
-		var lt string
-		switch v := precision - scale; v {
-		case 0:
-			lt = "1"
-		default:
-			lt = fmt.Sprintf("10^%d", v)
-		}
-		return fmt.Errorf("value with precision %d, scale %d must round to an absolute value less than %s", precision, scale, lt)
-	}
-	return nil
+	_, err := ctx.Quantize(dst, dst, -int32(scale))
+	return err
 }
 
-func Rem(x *Decimal, y *Decimal, precision int) (*Decimal, error) {
-	c := &Context{
-		Precision:   uint32(precision), //nolint:gosec
-		MaxExponent: apd.MaxExponent,
-		MinExponent: apd.MinExponent,
-		Traps:       apd.DefaultTraps,
-	}
-
+func Rem(ctx *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 	var remainder = new(Decimal)
 
-	_, err := c.Rem(remainder, x, y)
+	_, err := ctx.Rem(remainder, x, y)
 	if err != nil {
 		return nil, err
 	}
