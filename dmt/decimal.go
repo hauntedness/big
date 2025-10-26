@@ -1,8 +1,6 @@
 package dmt
 
 import (
-	"math/big"
-
 	"github.com/cockroachdb/apd/v3"
 )
 
@@ -17,31 +15,6 @@ type Condition = apd.Condition
 
 // ErrDecimal
 type ErrDecimal = apd.ErrDecimal
-
-// Integral return integral part of x
-func Integral(x *Decimal) *big.Int {
-	dst := new(apd.BigInt)
-	IntegralTo(dst, x)
-	return dst.MathBigInt()
-}
-
-// IntegralDst return set d to integral part of x.
-func IntegralDst(dst, x *Decimal) (*Decimal, error) {
-	_, err := RoundDownContext.RoundToIntegralValue(dst, x)
-	return dst, err
-}
-
-// IntegralTo sets y by remove the fraction part of x.
-// if y is nil, new(Decimal) will be used
-func IntegralTo(dst *apd.BigInt, x *Decimal) {
-	d := new(apd.Decimal)
-	_, _ = IntegralDst(d, x)
-	if d.Negative {
-		dst.Set(dst.Neg(&d.Coeff))
-	} else {
-		dst.Set(&d.Coeff)
-	}
-}
 
 // Sum is for convenience to call SumTo
 func Sum(values ...*Decimal) (*Decimal, error) {

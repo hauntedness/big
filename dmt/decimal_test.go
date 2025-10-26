@@ -73,56 +73,49 @@ func TestMulTo(t *testing.T) {
 func TestIntegralTo(t *testing.T) {
 	type args struct {
 		x *apd.Decimal
-		y *apd.BigInt
 	}
 	tests := []struct {
 		args args
-		want *apd.BigInt
+		want *apd.Decimal
 	}{
 		{
 			args: args{
 				x: apd.New(1234567, -2),
-				y: new(apd.BigInt),
 			},
-			want: apd.NewBigInt(12345),
+			want: FromInt(12345),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, 2),
-				y: new(apd.BigInt),
 			},
-			want: apd.NewBigInt(123456700),
+			want: FromInt(123456700),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, -122),
-				y: apd.NewBigInt(10),
 			},
-			want: apd.NewBigInt(0),
+			want: FromInt(0),
 		},
 		{
 			args: args{
 				x: apd.New(-1234567, -2),
-				y: new(apd.BigInt),
 			},
-			want: apd.NewBigInt(-12345),
+			want: FromInt(-12345),
 		},
 		{
 			args: args{
 				x: apd.New(-1234567, 2),
-				y: new(apd.BigInt),
 			},
-			want: apd.NewBigInt(-123456700),
+			want: FromInt(-123456700),
 		},
 		{
 			args: args{
 				x: apd.New(1234567, 122),
-				y: apd.NewBigInt(10),
 			},
-			want: func() *apd.BigInt {
-				integer := apd.NewBigInt(1234567)
+			want: func() *Decimal {
+				integer := FromInt(1234567)
 				for range 122 {
-					integer.Mul(integer, new(apd.BigInt).SetInt64(10))
+					MulTo(integer, FromInt(10), integer)
 				}
 				return integer
 			}(),
@@ -130,11 +123,9 @@ func TestIntegralTo(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("testcase_%d", i), func(t *testing.T) {
-			IntegralTo(tt.args.y, tt.args.x)
-			got := tt.args.y
-			fmt.Printf("IntegralTo(%v) => %v\n", tt.args.x, got)
-			if got.Cmp(tt.want) != 0 {
-				t.Errorf("IntegralTo() = %v, want %v", got, tt.want)
+			SetScale(WithRounding(4000, apd.RoundDown), tt.args.x, 0)
+			if tt.args.x.Cmp(tt.want) != 0 {
+				t.Errorf("IntegralTo() = %v, want %v", tt.args.x, tt.want)
 			}
 		})
 	}
@@ -174,140 +165,6 @@ func TestSetScale(t *testing.T) {
 			fmt.Println(integ.Coeff.Text(10), integ.Sign(), integ.Text('f'))
 			fmt.Println(frac.Coeff.Text(10), frac.Sign(), frac.Text('f'))
 		})
-	}
-}
-
-func BenchmarkIntegral1(b *testing.B) {
-	type args struct {
-		x *apd.Decimal
-		y *apd.BigInt
-	}
-	type bench struct {
-		args args
-		want *apd.BigInt
-	}
-	benches := []bench{
-		{
-			args: args{
-				x: apd.New(1234567, -2),
-				y: new(apd.BigInt),
-			},
-			want: apd.NewBigInt(12345),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, 2),
-				y: new(apd.BigInt),
-			},
-			want: apd.NewBigInt(123456700),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, -122),
-				y: new(apd.BigInt),
-			},
-			want: apd.NewBigInt(0),
-		},
-		{
-			args: args{
-				x: apd.New(-1234567, -2),
-				y: new(apd.BigInt),
-			},
-			want: apd.NewBigInt(-12345),
-		},
-		{
-			args: args{
-				x: apd.New(-1234567, 2),
-				y: new(apd.BigInt),
-			},
-			want: apd.NewBigInt(-123456700),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, 122),
-				y: new(apd.BigInt),
-			},
-			want: func() *apd.BigInt {
-				integer := apd.NewBigInt(1234567)
-				for range 122 {
-					integer.Mul(integer, new(apd.BigInt).SetInt64(10))
-				}
-				return integer
-			}(),
-		},
-	}
-	b.ResetTimer()
-	for range 100000 {
-		for _, v := range benches {
-			IntegralTo(v.args.y, v.args.x)
-		}
-	}
-}
-
-func BenchmarkIntegral2(b *testing.B) {
-	type args struct {
-		x *apd.Decimal
-		y *apd.BigInt
-	}
-	type bench struct {
-		args args
-		want *apd.BigInt
-	}
-	benches := []bench{
-		{
-			args: args{
-				x: apd.New(1234567, -2),
-				y: apd.NewBigInt(10),
-			},
-			want: apd.NewBigInt(12345),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, 2),
-				y: apd.NewBigInt(10),
-			},
-			want: apd.NewBigInt(123456700),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, -122),
-				y: apd.NewBigInt(10),
-			},
-			want: apd.NewBigInt(0),
-		},
-		{
-			args: args{
-				x: apd.New(-1234567, -2),
-				y: apd.NewBigInt(10),
-			},
-			want: apd.NewBigInt(-12345),
-		},
-		{
-			args: args{
-				x: apd.New(-1234567, 2),
-				y: apd.NewBigInt(10),
-			},
-			want: apd.NewBigInt(-123456700),
-		},
-		{
-			args: args{
-				x: apd.New(1234567, 122),
-				y: apd.NewBigInt(10),
-			},
-			want: func() *apd.BigInt {
-				integer := apd.NewBigInt(1234567)
-				for range 122 {
-					integer.Mul(integer, new(apd.BigInt).SetInt64(10))
-				}
-				return integer
-			}(),
-		},
-	}
-	b.ResetTimer()
-	for range 100000 {
-		for _, v := range benches {
-			IntegralTo(v.args.y, v.args.x)
-		}
 	}
 }
 
