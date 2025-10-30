@@ -69,16 +69,15 @@ func DivTo(dst *Decimal, c *Context, x *Decimal, y *Decimal) error {
 
 // SetScale is limit the precision and scale of dst
 func SetScale(ctx *Context, dst *Decimal, scale int) error {
-	return setScaleTo(ctx, dst, scale)
+	return setScaleTo(ctx, dst, dst, scale)
 }
 
 // SetScaleTo is similar to SetScale but avoid mutating the value of x
-func SetScaleTo(ctx *Context, dst *Decimal, x *Decimal, precision, scale int, rounder apd.Rounder) error {
-	dst.Set(x)
-	return setScaleTo(ctx, dst, scale)
+func SetScaleTo(ctx *Context, dst *Decimal, x *Decimal, scale int) error {
+	return setScaleTo(ctx, dst, x, scale)
 }
 
-func setScaleTo(ctx *Context, dst *Decimal, scale int) error {
+func setScaleTo(ctx *Context, dst *Decimal, x *Decimal, scale int) error {
 	if dst.Form != apd.Finite {
 		return nil
 	}
@@ -89,7 +88,7 @@ func setScaleTo(ctx *Context, dst *Decimal, scale int) error {
 	if scale > int(ctx.Precision) {
 		return fmt.Errorf("scale (%d) must be between 0 and precision (%d)", scale, ctx.Precision)
 	}
-	_, err := ctx.Quantize(dst, dst, -int32(scale))
+	_, err := ctx.Quantize(dst, x, -int32(scale))
 	return err
 }
 
