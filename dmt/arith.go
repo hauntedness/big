@@ -53,7 +53,7 @@ func MulTo(dst *Decimal, x *Decimal, y *Decimal) error {
 // Div is for convenience to call DivTo
 func Div(c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 	dst := new(Decimal)
-	err := DivTo(dst, c, x, y)
+	err := DivTo(c, dst, x, y)
 	return dst, err
 }
 
@@ -62,7 +62,7 @@ func Div(c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 // c.Precision must be > 0.
 // If an exact division is required, use a context with high precision
 // and verify it was exact by checking the Inexact flag on the return Condition.
-func DivTo(dst *Decimal, c *Context, x *Decimal, y *Decimal) error {
+func DivTo(c *Context, dst *Decimal, x *Decimal, y *Decimal) error {
 	_, err := c.Quo(dst, x, y)
 	return err
 }
@@ -104,15 +104,13 @@ func Rem(ctx *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 }
 
 // RelativeChange return value of (x - y) / x
-func RelativeChange(x *Decimal, y *Decimal) (*Decimal, error) {
-	sp := SafePresision(x) + SafePresision(y)
-	c := apd.BaseContext.WithPrecision(uint32(sp))
+func RelativeChange(c *Context, x *Decimal, y *Decimal) (*Decimal, error) {
 	dif := new(Decimal)
 	err := SubTo(dif, x, y)
 	if err != nil {
 		return nil, err
 	}
-	err = DivTo(dif, c, dif, x)
+	err = DivTo(c, dif, dif, x)
 	if err != nil {
 		return nil, err
 	}

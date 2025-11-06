@@ -41,12 +41,12 @@ func SumTo(dst *Decimal, values ...*Decimal) error {
 // Product is for convenience to call ProductTo
 func Product(values ...*Decimal) (*Decimal, error) {
 	dst := new(Decimal)
-	err := ProductTo(dst, values...)
+	err := SetProductTo(dst, values...)
 	return dst, err
 }
 
-// ProductTo multiply all values to dst
-func ProductTo(dst *Decimal, values ...*Decimal) error {
+// SetProductTo multiply all values to dst
+func SetProductTo(dst *Decimal, values ...*Decimal) error {
 	if len(values) == 0 {
 		dst.SetInt64(0)
 		return nil
@@ -63,12 +63,12 @@ func ProductTo(dst *Decimal, values ...*Decimal) error {
 
 // SafePresision get a safe presision which have enough space for x
 //   - SafePresision take x.Exponent into account even if x == 0
-func SafePresision(x *Decimal) int64 {
-	s := x.NumDigits()
+func SafePresision(x *Decimal) int {
+	s := int(x.NumDigits())
 	if x.Exponent > 0 {
 		// 1234000
-		s += int64(x.Exponent)
-	} else if e := -int64(x.Exponent); e > s {
+		s += int(x.Exponent)
+	} else if e := -int(x.Exponent); e > s {
 		// 0.000000123
 		s = e
 	}

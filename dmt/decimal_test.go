@@ -175,7 +175,7 @@ func TestSafePresision(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int64
+		want int
 	}{
 		{
 			name: "",
@@ -358,7 +358,7 @@ func TestProductTo(t *testing.T) {
 			tt.name = fmt.Sprintf("testcase_%d", i)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			err := ProductTo(tt.args.dst, tt.args.values...)
+			err := SetProductTo(tt.args.dst, tt.args.values...)
 			got := tt.args.dst
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductTo() error = %v, wantErr %v", err, tt.wantErr)
