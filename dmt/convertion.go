@@ -12,16 +12,16 @@ func ToBigFloat(x *Decimal) (*big.Float, bool) {
 	return new(big.Float).SetString(x.Text('G'))
 }
 
-func MustToIntegral(c *Context, x *Decimal) *big.Int {
+func MustRoundToInt(c *Context, x *Decimal) *big.Int {
 	dst := new(Decimal)
-	res, err := ToIntegral(c, dst, x)
+	res, err := RoundToInt(c, dst, x)
 	if err != nil {
 		panic(err)
 	}
 	return res
 }
 
-func ToIntegral(c *Context, dst, x *Decimal) (*big.Int, error) {
+func RoundToInt(c *Context, dst, x *Decimal) (*big.Int, error) {
 	_, err := c.RoundToIntegralValue(dst, x)
 	if err != nil {
 		return nil, err

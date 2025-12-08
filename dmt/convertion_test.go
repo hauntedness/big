@@ -125,11 +125,11 @@ func TestRoundToIntegral(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			result, err := dmt.ToIntegral(tt.ctx, tt.dst, tt.x)
+			result, err := dmt.RoundToInt(tt.ctx, tt.dst, tt.x)
 			if err := tt.check(result, err); err != nil {
-				t.Errorf("RoundToIntegral() = %v", err)
+				t.Errorf("RoundToInt() = %v", err)
 			} else {
-				slog.Info("RoundToIntegral", "value", result.String())
+				slog.Info("RoundToInt", "value", result.String())
 			}
 		})
 	}
