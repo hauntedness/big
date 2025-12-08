@@ -13,9 +13,6 @@ type Context = apd.Context
 // Condition
 type Condition = apd.Condition
 
-// ErrDecimal
-type ErrDecimal = apd.ErrDecimal
-
 // Sum is for convenience to call SumTo
 func Sum(values ...*Decimal) (*Decimal, error) {
 	dst := new(Decimal)

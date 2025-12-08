@@ -47,9 +47,9 @@ func TestMustFromFloat(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			res, err := dmt.MustFromFloat(tt.input)
+			res, err := dmt.FromFloat(tt.input)
 			if err := tt.check(res, err); err != nil {
-				t.Fatalf("MustFromFloat() failed: %v", err)
+				t.Fatalf("FromFloat() failed: %v", err)
 			} else {
 				slog.Info("convert float to decimal", "result", res)
 			}

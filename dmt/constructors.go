@@ -31,8 +31,13 @@ func FromFloat(f float64) (*apd.Decimal, error) {
 }
 
 // MustFromFloat panic instead of error.
-func MustFromFloat(f float64) (*apd.Decimal, error) {
-	return new(Decimal).SetFloat64(f)
+func MustFromFloat(f float64) *apd.Decimal {
+	ret, err := new(Decimal).SetFloat64(f)
+	if err != nil {
+		panic(err)
+	}
+
+	return ret
 }
 
 func FromInt[T int | int8 | int16 | int32 | int64](n T) *Decimal {
